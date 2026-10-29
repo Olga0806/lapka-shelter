@@ -1,0 +1,44 @@
+{% extends 'animals/base.html' %}
+{% block title %}Мой профиль{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Мой профиль</h2>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <p class="mb-1"><b>ФИО:</b> {{ user.first_name|default:"—" }}</p>
+        <p class="mb-1"><b>Телефон:</b> {{ user.last_name|default:"—" }}</p>
+        <p class="mb-0"><b>Логин:</b> {{ user.username }}</p>
+    </div>
+</div>
+
+<h4>Мои заявки</h4>
+{% if applications %}
+    <table class="table table-hover bg-white shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Животное</th>
+                <th>Статус</th>
+                <th>Дата</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for a in applications %}
+            <tr>
+                <td>{{ a.id }}</td>
+                <td><a href="{% url 'animal_detail' a.animal.pk %}">{{ a.animal.name }}</a></td>
+                <td>
+                    {% if a.status == 'new' %}<span class="badge bg-warning text-dark">Новая</span>
+                    {% elif a.status == 'approved' %}<span class="badge bg-success">Одобрена</span>
+                    {% else %}<span class="badge bg-danger">Отклонена</span>{% endif %}
+                </td>
+                <td>{{ a.created_at|date:"d.m.Y H:i" }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p class="text-muted">У вас пока нет заявок.</p>
+{% endif %}
+{% endblock %}

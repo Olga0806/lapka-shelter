@@ -1,0 +1,50 @@
+{% extends 'animals/base.html' %}
+{% block title %}{{ animal.name }}{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+            <h2>{{ animal.name }}</h2>
+            <div>
+                {% if user.is_authenticated and user.is_staff %}
+                    <a href="{% url 'animal_update' animal.pk %}" class="btn btn-warning btn-sm">Редактировать</a>
+                    <a href="{% url 'animal_delete' animal.pk %}" class="btn btn-danger btn-sm">Удалить</a>
+                {% endif %}
+                <a href="{% url 'animal_list' %}" class="btn btn-secondary btn-sm">Назад</a>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-6">
+                <p><b>Вид:</b> {{ animal.get_species_display }}</p>
+                <p><b>Порода:</b> {{ animal.breed|default:"—" }}</p>
+                <p><b>Возраст:</b> {{ animal.age }} лет</p>
+                <p><b>Пол:</b> {{ animal.get_gender_display }}</p>
+                <p><b>Описание:</b><br>{{ animal.description|default:"—" }}</p>
+
+                {% if user.is_authenticated %}
+                    {% if not user.is_staff %}
+                        <a href="{% url 'application_create' animal.pk %}" class="btn btn-success mt-3">
+                            🐾 Забрать животное
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-warning mt-3">
+                        Чтобы забрать животное, <a href="{% url 'login' %}">войдите</a>
+                        или <a href="{% url 'register' %}">зарегистрируйтесь</a>.
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                <h5>Фотографии</h5>
+                {% for p in animal.photos.all %}
+                    <img src="{{ p.image.url }}" class="thumb">
+                {% empty %}
+                    <p class="text-muted">Фотографий нет</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
